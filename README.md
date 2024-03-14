@@ -96,4 +96,103 @@ INSERT INTO Orders (book_id, quantity, order_date) VALUES
 (5, 2, '2023-05-30');
 ```
 
-These commands will set up a basic structure for your `BookstoreDB` and populate it with some initial data. You can then run various queries to retrieve or manipulate this data, such as finding all books by a certain author, calculating the total sales for a particular book, or listing all orders within a specific date range.
+Using the `BookstoreDB` database we created, let's explore examples of aggregate functions (`AVG()`, `COUNT()`, `MIN()`, `MAX()`, `SUM()`), along with `GROUP BY` and `HAVING` clauses. These examples will help you understand how to summarize and analyze data in your tables.
+
+### AVG() - Average Price of Books in Each Category
+**Question:** What is the average price of books in each category available in our bookstore?
+
+```sql
+SELECT 
+    Categories.category_name, 
+    AVG(Books.price) AS average_price
+FROM 
+    Books
+INNER JOIN 
+    Categories ON Books.category_id = Categories.category_id
+GROUP BY 
+    Categories.category_name;
+```
+
+This query calculates the average price of books in each category.
+
+### COUNT() - Count of Books by Each Author
+**Question:** How many books has each author written that are currently available in our bookstore?
+```sql
+SELECT 
+    Authors.name, 
+    COUNT(Books.book_id) AS books_count
+FROM 
+    Books
+INNER JOIN 
+    Authors ON Books.author_id = Authors.author_id
+GROUP BY 
+    Authors.name;
+```
+
+This query counts how many books each author has written.
+
+### MIN() - Minimum Price of Books in Each Category
+**Question:** What is the lowest price of a book within each category in our bookstore?
+```sql
+SELECT 
+    Categories.category_name, 
+    MIN(Books.price) AS min_price
+FROM 
+    Books
+INNER JOIN 
+    Categories ON Books.category_id = Categories.category_id
+GROUP BY 
+    Categories.category_name;
+```
+
+This query finds the minimum price of books in each category.
+
+### MAX() - Maximum Price of Books in Each Category
+**Question:** What is the highest price of a book within each category in our bookstore?
+```sql
+SELECT 
+    Categories.category_name, 
+    MAX(Books.price) AS max_price
+FROM 
+    Books
+INNER JOIN 
+    Categories ON Books.category_id = Categories.category_id
+GROUP BY 
+    Categories.category_name;
+```
+
+This query finds the maximum price of books in each category.
+
+### SUM() - Total Sales (Price * Quantity) for Each Book
+**Question:** What is the total sales revenue generated for each book in our bookstore, considering the quantity sold and the price of each book?
+First, let's assume we want to calculate the total sales for each book based on the orders. We'll need to join the `Books` and `Orders` tables for this.
+
+```sql
+SELECT 
+    Books.title, 
+    SUM(Books.price * Orders.quantity) AS total_sales
+FROM 
+    Books
+INNER JOIN 
+    Orders ON Books.book_id = Orders.book_id
+GROUP BY 
+    Books.title;
+```
+
+This query calculates the total sales for each book.
+
+### GROUP BY with HAVING - Books with More Than One Order
+**Question:** Which books in our bookstore have been ordered more than once?
+```sql
+SELECT 
+    Books.title, 
+    COUNT(Orders.order_id) AS order_count
+FROM 
+    Books
+INNER JOIN 
+    Orders ON Books.book_id = Orders.book_id
+GROUP BY 
+    Books.title
+HAVING 
+    COUNT(Orders.order_id) > 1;
+```
